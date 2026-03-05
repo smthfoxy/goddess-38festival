@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>🌿 你是什么植物？· 38女神节</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue',sans-serif;
+  background:linear-gradient(160deg,#f8d7ea 0%,#d8b4fe 45%,#a5b4fc 100%);
+  min-height:100vh;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:24px 16px 48px;
+}
+.app{width:100%;max-width:400px;}
+.screen{display:none;}
+.screen.active{display:block;}
+.card{
+  background:rgba(255,255,255,0.97);
+  border-radius:28px;
+  padding:30px 22px 28px;
+  box-shadow:0 20px 60px rgba(124,58,237,0.18);
+  position:relative;
+  overflow:hidden;
+}
+.card-deco{
+  position:absolute;
+  top:-14px;right:-14px;
+  font-size:88px;
+  opacity:0.07;
+  transform:rotate(15deg);
+  pointer-events:none;
+}
+/* Progress */
+.progress{
+  display:flex;justify-content:center;gap:8px;margin-bottom:22px;
+}
+.dot{
+  width:7px;height:7px;border-radius:50%;
+  background:rgba(167,139,250,0.3);
+  transition:all .3s;
+}
+.dot.active{background:#a78bfa;width:20px;border-radius:4px;}
+.dot.done{background:#c4b5fd;}
+/* Labels */
+.step-num{font-size:11px;color:#a78bfa;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+h2{font-size:22px;color:#4c1d95;font-weight:800;line-height:1.35;margin-bottom:6px;}
+.sub{font-size:13px;color:#7c3aed;opacity:.75;margin-bottom:22px;line-height:1.6;}
+/* Input */
+input[type=text]{
+  width:100%;padding:14px 16px;
+  border:2px solid #e9d5ff;border-radius:16px;
+  font-size:16px;color:#4c1d95;outline:none;
+  background:#faf5ff;transition:border-color .2s;
+}
+input[type=text]:focus{border-color:#c084fc;}
+input[type=text]::placeholder{color:#c4b5fd;}
+/* Chips */
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:6px;}
+.chip{
+  padding:9px 16px;border:2px solid #e9d5ff;border-radius:100px;
+  font-size:13.5px;color:#7c3aed;cursor:pointer;
+  transition:all .2s;background:white;user-select:none;
+}
+.chip.selected{
+  background:linear-gradient(135deg,#c084fc,#818cf8);
+  border-color:transparent;color:white;font-weight:700;
+}
+.chip-hint{font-size:12px;color:#a78bfa;margin-bottom:14px;}
+/* Color grid */
+.colors{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:8px;}
+.clr{
+  aspect-ratio:1;border-radius:14px;border:3px solid transparent;
+  cursor:pointer;display:flex;align-items:flex-end;
+  justify-content:center;padding-bottom:5px;
+  font-size:11px;font-weight:700;transition:all .2s;
+  text-shadow:0 1px 3px rgba(0,0,0,.35);color:white;
+}
+.clr.selected{border-color:white;box-shadow:0 0 0 3px #c084fc;transform:scale(1.06);}
+/* Attitude */
+.attitudes{display:flex;flex-direction:column;gap:9px;}
+.att{
+  padding:13px 16px;border:2px solid #e9d5ff;border-radius:14px;
+  font-size:14px;color:#7c3aed;cursor:pointer;
+  transition:all .2s;background:white;text-align:left;line-height:1.5;
+}
+.att.selected{background:linear-gradient(135deg,#faf5ff,#ede9fe);border-color:#c084fc;color:#5b21b6;font-weight:700;}
+/* Buttons */
+.btn{
+  width:100%;padding:15px;border-radius:100px;border:none;
+  font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:18px;
+}
+.btn-p{
+  background:linear-gradient(135deg,#c084fc,#818cf8);color:white;
+  box-shadow:0 8px 24px rgba(192,132,252,.4);
+}
+.btn-p:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;}
+.btn-p:not(:disabled):active{transform:scale(.97);}
+.btn-b{background:transparent;color:#a78bfa;font-size:13.5px;margin-top:6px;}
+/* Welcome */
+.wico{font-size:72px;text-align:center;margin-bottom:14px;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.wtitle{text-align:center;font-size:26px;font-weight:800;color:#4c1d95;margin-bottom:8px;}
+.wsub{text-align:center;font-size:14px;color:#7c3aed;opacity:.8;line-height:1.7;margin-bottom:20px;}
+.badge{
+  background:linear-gradient(135deg,#fef9c3,#fde68a);
+  color:#92400e;font-size:12px;font-weight:700;
+  padding:5px 14px;border-radius:100px;
+  text-align:center;display:block;margin-bottom:18px;
+}
+/* Loading */
+.loading-ico{font-size:64px;text-align:center;animation:spin 2s linear infinite;}
+@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+/* Result */
+.r-label{text-align:center;font-size:11px;color:#a78bfa;font-weight:700;letter-spacing:2px;margin-bottom:4px;}
+.r-plant{font-size:80px;text-align:center;margin:4px 0;animation:bloom .7s ease-out;}
+@keyframes bloom{0%{transform:scale(0)rotate(-20deg);opacity:0}70%{transform:scale(1.12)rotate(4deg)}100%{transform:scale(1)rotate(0);opacity:1}}
+.r-name{text-align:center;font-size:30px;font-weight:800;color:#4c1d95;margin-bottom:6px;}
+.r-tag{
+  display:inline-block;background:#f5f3ff;
+  color:#7c3aed;font-size:13px;font-weight:600;
+  padding:5px 16px;border-radius:100px;margin-bottom:16px;
+}
+.r-tag-wrap{text-align:center;}
+.r-desc{
+  font-size:14.5px;color:#5b21b6;line-height:1.85;
+  background:#faf5ff;padding:15px 16px;border-radius:16px;margin-bottom:14px;
+}
+.r-poem{
+  font-size:14px;color:#7c3aed;line-height:2;
+  text-align:center;padding:14px 12px;
+  border-top:1px dashed #ede9fe;border-bottom:1px dashed #ede9fe;
+  margin-bottom:16px;font-style:italic;
+}
+.r-surprise{
+  background:linear-gradient(135deg,#fef9c3,#fef3c7);
+  border:1.5px solid #fde68a;border-radius:16px;
+  padding:14px 16px;text-align:center;
+  font-size:14px;color:#78350f;line-height:1.7;margin-bottom:14px;
+}
+.r-surprise strong{display:block;font-size:16px;margin-bottom:3px;}
+.r-share{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  font-size:12px;color:#a78bfa;padding:12px;
+  background:#f5f3ff;border-radius:12px;
+}
+/* Fade in */
+.fade-in{animation:fi .4s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- Welcome -->
+<div id="s0" class="screen active">
+<div class="card fade-in">
+  <div class="wico">🌿</div>
+  <div class="wtitle">你是什么植物？</div>
+  <div class="wsub">告诉我你是什么样的人<br>AI 为你找到专属守护植物 ✨</div>
+  <span class="badge">🌸 38 女神节专属活动</span>
+  <button class="btn btn-p" onclick="go('s1')">开始测试 →</button>
+</div>
+</div>
+
+<!-- Step 1: Name -->
+<div id="s1" class="screen">
+<div class="card fade-in">
+  <div class="card-deco">🌸</div>
+  <div class="progress">
+    <div class="dot active" id="p1"></div>
+    <div class="dot" id="p2"></div>
+    <div class="dot" id="p3"></div>
+    <div class="dot" id="p4"></div>
+    <div class="dot" id="p5"></div>
+  </div>
+  <div class="step-num">第 1 题 / 共 5 题</div>
+  <h2>你叫什么名字？</h2>
+  <div class="sub">用于生成你的专属植物卡片 🌱</div>
+  <input type="text" id="inp-name" placeholder="输入你的名字" maxlength="10" oninput="onName()">
+  <button class="btn btn-p" id="b1" onclick="go('s2')" disabled>下一步 →</button>
+  <button class="btn btn-b" onclick="go('s0')">← 返回</button>
+</div>
+</div>
+
+<!-- Step 2: Personality -->
+<div id="s2" class="screen">
+<div class="card fade-in">
+  <div class="card-deco">💜</div>
+  <div class="progress">
+    <div class="dot done"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+  <div class="step-num">第 2 题 / 共 5 题</div>
+  <h2>你的性格是？</h2>
+  <div class="chip-hint">最多选 2 个 ✨</div>
+  <div class="chips" id="c-pers">
+    <div class="chip" data-v="温柔细腻" onclick="pick(this,'pers',2)">温柔细腻</div>
+    <div class="chip" data-v="独立干练" onclick="pick(this,'pers',2)">独立干练</div>
+    <div class="chip" data-v="活泼开朗" onclick="pick(this,'pers',2)">活泼开朗</div>
+    <div class="chip" data-v="文静内敛" onclick="pick(this,'pers',2)">文静内敛</div>
+    <div class="chip" data-v="热情直接" onclick="pick(this,'pers',2)">热情直接</div>
+    <div class="chip" data-v="随遇而安" onclick="pick(this,'pers',2)">随遇而安</div>
+    <div class="chip" data-v="善良有爱" onclick="pick(this,'pers',2)">善良有爱</div>
+    <div class="chip" data-v="有点固执" onclick="pick(this,'pers',2)">有点小固执</div>
+  </div>
+  <button class="btn btn-p" id="b2" onclick="go('s3')" disabled>下一步 →</button>
+  <button class="btn btn-b" onclick="go('s1')">← 返回</button>
+</div>
+</div>
+
+<!-- Step 3: Hobbies -->
+<div id="s3" class="screen">
+<div class="card fade-in">
+  <div class="card-deco">🎮</div>
+  <div class="progress">
+    <div class="dot done"></div>
+    <div class="dot done"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+  <div class="step-num">第 3 题 / 共 5 题</div>
+  <h2>你喜欢做什么？</h2>
+  <div class="chip-hint">最多选 3 个 ✨</div>
+  <div class="chips" id="c-hobbies">
+    <div class="chip" data-v="美食做饭" onclick="pick(this,'hobbies',3)">🍳 美食/做饭</div>
+    <div class="chip" data-v="旅行" onclick="pick(this,'hobbies',3)">✈️ 旅行</div>
+    <div class="chip" data-v="阅读" onclick="pick(this,'hobbies',3)">📚 读书</div>
+    <div class="chip" data-v="运动" onclick="pick(this,'hobbies',3)">🏃 运动</div>
+    <div class="chip" data-v="追剧" onclick="pick(this,'hobbies',3)">📺 追剧</div>
+    <div class="chip" data-v="游戏" onclick="pick(this,'hobbies',3)">🎮 游戏</div>
+    <div class="chip" data-v="手工艺术" onclick="pick(this,'hobbies',3)">🎨 手工/艺术</div>
+    <div class="chip" data-v="音乐" onclick="pick(this,'hobbies',3)">🎵 音乐</div>
+  </div>
+  <button class="btn btn-p" id="b3" onclick="go('s4')" disabled>下一步 →</button>
+  <button class="btn btn-b" onclick="go('s2')">← 返回</button>
+</div>
+</div>
+
+<!-- Step 4: Attitude -->
+<div id="s4" class="screen">
+<div class="card fade-in">
+  <div class="card-deco">🌈</div>
+  <div class="progress">
+    <div class="dot done"></div>
+    <div class="dot done"></div>
+    <div class="dot done"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+  </div>
+  <div class="step-num">第 4 题 / 共 5 题</div>
+  <h2>你对生活的态度？</h2>
+  <div class="sub">选一个最像你说话风格的</div>
+  <div class="attitudes">
+    <button class="att" data-v="只要开心就好" onclick="selAtt(this)">😄 只要开心就好，别太累自己</button>
+    <button class="att" data-v="认真过好每一天" onclick="selAtt(this)">✨ 认真对待生活，每天都值得</button>
+    <button class="att" data-v="努力向上" onclick="selAtt(this)">🚀 目标明确，努力就会有收获</button>
+    <button class="att" data-v="慢慢来" onclick="selAtt(this)">🍃 慢慢来，享受过程就好</button>
+    <button class="att" data-v="随心所欲" onclick="selAtt(this)">🌊 跟着感觉走，活出自己</button>
+    <button class="att" data-v="享受生活" onclick="selAtt(this)">🌈 好好享受生活的每个细节</button>
+  </div>
+  <button class="btn btn-p" id="b4" onclick="go('s5')" disabled>下一步 →</button>
+  <button class="btn btn-b" onclick="go('s3')">← 返回</button>
+</div>
+</div>
+
+<!-- Step 5: Color -->
+<div id="s5" class="screen">
+<div class="card fade-in">
+  <div class="card-deco">🎨</div>
+  <div class="progress">
+    <div class="dot done"></div>
+    <div class="dot done"></div>
+    <div class="dot done"></div>
+    <div class="dot done"></div>
+    <div class="dot active"></div>
+  </div>
+  <div class="step-num">第 5 题 / 共 5 题</div>
+  <h2>你最喜欢哪种颜色？</h2>
+  <div class="sub">选一个最让你心动的 💜</div>
+  <div class="colors">
+    <div class="clr" style="background:linear-gradient(135deg,#f9a8d4,#ec4899)" data-v="粉色" onclick="selClr(this)">粉色</div>
+    <div class="clr" style="background:linear-gradient(135deg,#c084fc,#7c3aed)" data-v="紫色" onclick="selClr(this)">紫色</div>
+    <div class="clr" style="background:linear-gradient(135deg,#f1f5f9,#cbd5e1)" data-v="白色" onclick="selClr(this)"><span style="color:#94a3b8">白色</span></div>
+    <div class="clr" style="background:linear-gradient(135deg,#f87171,#dc2626)" data-v="红色" onclick="selClr(this)">红色</div>
+    <div class="clr" style="background:linear-gradient(135deg,#4ade80,#16a34a)" data-v="绿色" onclick="selClr(this)">绿色</div>
+    <div class="clr" style="background:linear-gradient(135deg,#fbbf24,#d97706)" data-v="黄色" onclick="selClr(this)">黄色</div>
+    <div class="clr" style="background:linear-gradient(135deg,#60a5fa,#2563eb)" data-v="蓝色" onclick="selClr(this)">蓝色</div>
+    <div class="clr" style="background:linear-gradient(135deg,#475569,#1e293b)" data-v="深色" onclick="selClr(this)">深色</div>
+  </div>
+  <button class="btn btn-p" id="b5" onclick="calc()" disabled>🌿 发现我的守护植物</button>
+  <button class="btn btn-b" onclick="go('s4')">← 返回</button>
+</div>
+</div>
+
+<!-- Loading -->
+<div id="s-load" class="screen">
+<div class="card" style="text-align:center;padding:56px 24px">
+  <div class="loading-ico">🔮</div>
+  <div style="font-size:18px;color:#7c3aed;font-weight:700;margin-top:18px">正在解读你的能量…</div>
+  <div style="font-size:13px;color:#a78bfa;margin-top:8px;line-height:1.7">AI 正在为你<br>寻找专属守护植物</div>
+</div>
+</div>
+
+<!-- Result -->
+<div id="s-res" class="screen">
+<div class="card fade-in" id="res-card">
+  <div class="r-label">✨ 你的守护植物 ✨</div>
+  <div class="r-plant" id="r-emoji">🌸</div>
+  <div class="r-name" id="r-name">茉莉花</div>
+  <div class="r-tag-wrap"><span class="r-tag" id="r-trait">温柔、纯粹、内有芬芳</span></div>
+  <div class="r-desc" id="r-desc"></div>
+  <div class="r-poem" id="r-poem"></div>
+  <div class="r-surprise">
+    <strong>🎁 你的专属女神节惊喜</strong>
+    正在悄悄准备中…<br>
+    <strong style="color:#b45309">📅 周一上班，惊喜在等你 🌿</strong>
+  </div>
+  <div class="r-share">
+    📸 截图发至活动打卡群，参与惊喜评选！
+  </div>
+</div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+// ── State ──
+const S = { name:'', pers:[], hobbies:[], att:'', clr:'' };
+
+// ── Plant Data ──
+const PLANTS = [
+  { n:'茉莉花', e:'🌸', t:'温柔、纯粹、内有芬芳',
+    d:'你温柔而纯粹，像茉莉一样不张扬，却让人难以忘怀。你的存在悄悄渗进每个人心里，让人不自觉地靠近你、依赖你。',
+    p:'不争不抢，自有芬芳，\n认定了，就香到底。',
+    pp:['温柔细腻','文静内敛','善良有爱'], cc:['白色','粉色'], hh:['阅读'], aa:['认真','享受'] },
+  { n:'栀子花', e:'🌼', t:'深情、执着、香气持久',
+    d:'你是那种一旦认定就全力以赴的人。有点固执，但那是因为你对每一件事都认真。这种深情让你走到哪里都让人难忘。',
+    p:'有点执着，香气也持久，\n认定了，就一路香到底。',
+    pp:['有点固执','温柔细腻','善良有爱'], cc:['白色','粉色'], hh:['阅读'], aa:['认真','享受'] },
+  { n:'香水柠檬树', e:'🍋', t:'清爽、独立、有个性',
+    d:'你有主见，有想法，不随大流。喜欢用美食和生活细节犒劳自己，骨子里是个享受生活的独立灵魂。有点酸，却让人越了解越喜欢。',
+    p:'有点酸，但越接触越着迷，\n活出自己的味道，不将就。',
+    pp:['独立干练','随遇而安'], cc:['黄色','绿色'], hh:['美食做饭','旅行'], aa:['享受','开心'] },
+  { n:'龟背竹', e:'🌿', t:'大气、稳重、气场十足',
+    d:'你有一种天然的大气——不紧张，不焦虑，从容生长。无论遇到什么，你总能稳住。这种气场不是装出来的，是真正刻在骨子里的。',
+    p:'从容生长，什么都挡不住，\n你的稳，是最动人的底气。',
+    pp:['独立干练','随遇而安'], cc:['绿色','深色'], hh:['旅行','运动'], aa:['慢慢','享受'] },
+  { n:'火焰南天竹', e:'🔥', t:'热情、有冲劲、越冬越美',
+    d:'你充满热情和活力，做事有冲劲，越是困难越激发你的斗志。就像火焰南天竹一样，越冷的时候颜色越红，越美丽。',
+    p:'越冬越红，越难越美，\n你的热情从不会被浇灭。',
+    pp:['热情直接','活泼开朗'], cc:['红色'], hh:['运动'], aa:['努力'] },
+  { n:'满天星', e:'🤍', t:'温暖、成人之美、细腻包容',
+    d:'你不抢主角光环，却是让一切美好成立的那个人。你的温暖和细腻，是大家最需要的存在——不是配角，是点睛之笔。',
+    p:'不做主角，但哪里都少不了你，\n你的温柔，大家都懂。',
+    pp:['温柔细腻','善良有爱'], cc:['白色','粉色'], hh:['音乐'], aa:['认真','开心'] },
+  { n:'金枝玉叶棒棒糖', e:'🍡', t:'可爱、精致、充满趣味',
+    d:'圆滚滚的，可爱又有格调。你喜欢把生活过得有趣有质感，注重细节，哪怕是一个小小的仪式感，也能让你开心一整天。',
+    p:'圆圆的，可爱又精致，\n把每个普通的日子过出花来。',
+    pp:['活泼开朗','随遇而安'], cc:['粉色','紫色'], hh:['游戏','手工艺术'], aa:['开心','享受'] },
+  { n:'长寿花', e:'🌺', t:'乐观、活泼、带来好运',
+    d:'你走到哪里，哪里就亮起来。你的笑声和正能量是大家的阳光，长寿花开得持久、鲜艳，就像你一样，从不吝啬自己的快乐。',
+    p:'小小一株，开出满满的快乐，\n有你在，哪里都温暖。',
+    pp:['活泼开朗','热情直接'], cc:['粉色','黄色','红色'], hh:['追剧','游戏'], aa:['开心','享受'] },
+  { n:'虎皮兰', e:'🌵', t:'干练、独立、适应力极强',
+    d:'放哪都能活，放哪都出彩——这就是你。不娇气，不依赖，无论环境怎么变，你总能找到自己的节奏和方向，职场里最靠谱的那个。',
+    p:'不娇气，放哪都精彩，\n这份独立，需要修炼很久。',
+    pp:['独立干练','有点固执'], cc:['绿色','深色'], hh:['运动'], aa:['努力','认真'] },
+  { n:'杜鹃花', e:'🌸', t:'热烈、勇敢、敢爱敢恨',
+    d:'你开起来惊艳一片，从不保留自己的热情。你敢爱，敢表达，感情浓烈，让人过目不忘。这种勇气，是最真实的美丽。',
+    p:'开起来就惊艳，\n敢于表达，才是真正的勇气。',
+    pp:['热情直接','活泼开朗'], cc:['红色','粉色'], hh:['运动'], aa:['努力','随心'] },
+  { n:'七里香', e:'🌿', t:'亲切、有魅力、余韵悠长',
+    d:'你有一种自然的魅力——不刻意，却让人喜欢。走过的地方都留下了香气，这种被人记住的感觉，不是你追求的，却自然而来。',
+    p:'香气飘七里，走到哪里都被记住，\n这份魅力，是你与生俱来的。',
+    pp:['善良有爱','温柔细腻'], cc:['紫色','白色'], hh:['音乐','美食做饭'], aa:['享受','认真'] },
+  { n:'红掌', e:'❤️', t:'热情、直接、敢于表达',
+    d:'鲜艳、大方、毫不掩饰自己的热情——这就是你。你直接，说什么是什么，感情真实，和你在一起让人觉得很安心。',
+    p:'鲜艳如你，热情不减，\n真实，才是最好看的模样。',
+    pp:['热情直接','活泼开朗'], cc:['红色'], hh:['运动','追剧'], aa:['开心','随心'] },
+  { n:'含羞草', e:'🌱', t:'敏感、细腻、真实可爱',
+    d:'你感受力很强，轻轻一碰就有反应——这不是软弱，是真实。你比任何人都敏锐，也因此更懂得体贴别人、感受生活的细微美好。',
+    p:'轻轻一碰就有感觉，\n真实，才是你最可爱的样子。',
+    pp:['温柔细腻','文静内敛'], cc:['粉色','绿色'], hh:['追剧','游戏'], aa:['开心','慢慢'] },
+  { n:'菩提树', e:'🍃', t:'智慧、沉静、通透',
+    d:'你有一种难得的沉静——不急，不燥，看问题总比别人透彻一些。这种内在的智慧和通透，是时间和阅历给你的礼物。',
+    p:'静下来，自有一种通透，\n你的沉淀，是最深的美丽。',
+    pp:['文静内敛','有点固执'], cc:['绿色','蓝色'], hh:['阅读'], aa:['慢慢','认真'] },
+  { n:'鸭脚木', e:'🌿', t:'随和、好相处、强适应力',
+    d:'你随遇而安，到哪里都能适应，和谁都能聊得来。不挑剔，不娇气，这种从容和随和，让你走到哪里都受欢迎。',
+    p:'落到哪里都生根，\n从容，是最难学会的功课。',
+    pp:['随遇而安','善良有爱'], cc:['绿色'], hh:['旅行','追剧'], aa:['慢慢','开心'] },
+  { n:'彩叶花叶络石', e:'🎨', t:'丰富、创意、不走寻常路',
+    d:'每一片叶子都不一样——这正是你。你有创意，有自己的审美，不喜欢千篇一律。多元、丰富、独特，你的美是立体的。',
+    p:'每一片都不同，每一面都动人，\n多元，才是真正的你。',
+    pp:['独立干练','活泼开朗'], cc:['紫色','绿色'], hh:['手工艺术','旅行'], aa:['随心','享受'] },
+  { n:'钱串多肉', e:'💚', t:'踏实、务实、稳中带福',
+    d:'你脚踏实地，一步一个脚印。不浮躁，不冒进，积累起来的东西才是真正属于你的。生活里有你，大家都觉得靠谱、稳当。',
+    p:'一串一串，积累出丰盛，\n踏实的人，运气从来不差。',
+    pp:['随遇而安','文静内敛'], cc:['绿色','蓝色'], hh:['游戏','阅读'], aa:['慢慢','认真'] },
+  { n:'山茶花', e:'🌸', t:'高雅、内敛、美在骨子里',
+    d:'不争不抢，却自有一种气质。你不需要靠喧嚣来证明自己，高雅是天生的，这种内敛的美，越了解越着迷。',
+    p:'不争不抢，美在骨子里，\n这种高雅，是天生的。',
+    pp:['文静内敛','温柔细腻'], cc:['粉色','白色','红色'], hh:['阅读','音乐'], aa:['认真','慢慢'] },
+  { n:'金边瑞香', e:'🌿', t:'精致、有品位、细节见格局',
+    d:'连叶子的边都是金色的——细节才见格局。你对品质有要求，对生活有审美，注重细节不是挑剔，而是一种对自己的尊重。',
+    p:'边角都是金的，\n细节见格局，这就是你。',
+    pp:['温柔细腻','有点固执'], cc:['紫色','黄色'], hh:['手工艺术','音乐','美食做饭'], aa:['认真','享受'] },
+  { n:'白掌', e:'🤍', t:'纯粹、治愈、给人安全感',
+    d:'你有一种特别的治愈力——安安静静的，却让人在你身边感到平静和安心。纯粹、真实、不造作，这正是你最珍贵的地方。',
+    p:'安静，却最治愈，\n谢谢你，一直温柔地在。',
+    pp:['温柔细腻','文静内敛'], cc:['白色'], hh:['阅读','音乐'], aa:['慢慢','认真'] }
+];
+
+// ── Navigation ──
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  const card = el.querySelector('.card');
+  if(card){ card.classList.remove('fade-in'); void card.offsetWidth; card.classList.add('fade-in'); }
+  window.scrollTo(0,0);
+}
+
+// ── Input handlers ──
+function onName(){
+  S.name = document.getElementById('inp-name').value.trim();
+  document.getElementById('b1').disabled = S.name.length===0;
+}
+
+function pick(el, key, max){
+  const arr = S[key];
+  const v = el.dataset.v;
+  if(el.classList.contains('selected')){
+    el.classList.remove('selected');
+    S[key] = arr.filter(x=>x!==v);
+  } else {
+    const sel = document.querySelectorAll(`#c-${key} .chip.selected`);
+    if(sel.length>=max) return;
+    el.classList.add('selected');
+    arr.push(v);
+  }
+  const map={pers:'b2',hobbies:'b3'};
+  document.getElementById(map[key]).disabled = S[key].length===0;
+}
+
+function selAtt(el){
+  document.querySelectorAll('.att').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  S.att = el.dataset.v;
+  document.getElementById('b4').disabled=false;
+}
+
+function selClr(el){
+  document.querySelectorAll('.clr').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  S.clr = el.dataset.v;
+  document.getElementById('b5').disabled=false;
+}
+
+// ── Scoring & Result ──
+function calc(){
+  go('s-load');
+  setTimeout(()=>{
+    const scored = PLANTS.map(pl=>{
+      let sc=0;
+      S.pers.forEach(p=>{ if(pl.pp.includes(p)) sc+=3; });
+      if(pl.cc.includes(S.clr)) sc+=2;
+      S.hobbies.forEach(h=>{ if(pl.hh.includes(h)) sc+=1; });
+      pl.aa.forEach(kw=>{ if(S.att.includes(kw)) sc+=1; });
+      return {pl,sc};
+    });
+    scored.sort((a,b)=>b.sc-a.sc);
+    const w = scored[0].pl;
+
+    document.getElementById('r-emoji').textContent = w.e;
+    document.getElementById('r-name').textContent = w.n;
+    document.getElementById('r-trait').textContent = w.t;
+    document.getElementById('r-desc').textContent = `${S.name}，${w.d}`;
+    document.getElementById('r-poem').innerHTML = w.p.replace('\n','<br>');
+    go('s-res');
+  }, 2200);
+}
+</script>
+</body>
+</html>
