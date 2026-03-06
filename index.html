@@ -47,9 +47,7 @@ input[type=text]::placeholder{color:#c4b5fd;}
 .r-label{text-align:center;font-size:11px;color:#a78bfa;font-weight:700;letter-spacing:2px;margin-bottom:12px;}
 .r-mood-img{width:100%;border-radius:20px;margin-bottom:16px;object-fit:cover;max-height:260px;box-shadow:0 8px 32px rgba(124,58,237,0.15);}
 .r-desc{font-size:15px;color:#5b21b6;line-height:1.9;background:#faf5ff;padding:18px;border-radius:16px;margin-bottom:14px;}
-.r-surprise{background:linear-gradient(135deg,#fef9c3,#fef3c7);border:1.5px solid #fde68a;border-radius:16px;padding:14px 16px;text-align:center;font-size:14px;color:#78350f;line-height:1.7;margin-bottom:14px;}
-.r-surprise strong{display:block;font-size:16px;margin-bottom:3px;}
-.r-share{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:#a78bfa;padding:12px;background:#f5f3ff;border-radius:12px;}
+.r-share{display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:800;color:white;padding:18px 16px;background:linear-gradient(135deg,#c084fc,#818cf8);border-radius:16px;box-shadow:0 8px 24px rgba(192,132,252,.45);letter-spacing:0.5px;}
 .fade-in{animation:fi .4s ease;}
 @keyframes fi{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 </style>
@@ -86,7 +84,7 @@ input[type=text]::placeholder{color:#c4b5fd;}
   <div class="progress"><div class="dot done"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
   <div class="step-num">第 2 题 / 共 5 题</div>
   <h2>你的性格是？</h2>
-  <div class="chip-hint">最多选 2 个 ✨</div>
+  <div class="chip-hint">最多选 2 个；没有合适的可点「其他」自行填写 ✨</div>
   <div class="chips" id="c-pers">
     <div class="chip" data-v="温柔体贴" onclick="pick(this,'pers',2)">温柔体贴</div>
     <div class="chip" data-v="独立自主" onclick="pick(this,'pers',2)">独立自主</div>
@@ -113,7 +111,7 @@ input[type=text]::placeholder{color:#c4b5fd;}
   <div class="progress"><div class="dot done"></div><div class="dot done"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
   <div class="step-num">第 3 题 / 共 5 题</div>
   <h2>你喜欢做什么？</h2>
-  <div class="chip-hint">最多选 3 个 ✨</div>
+  <div class="chip-hint">最多选 3 个；没有合适的可点「其他」自行填写 ✨</div>
   <div class="chips" id="c-hobbies">
     <div class="chip" data-v="读书" onclick="pick(this,'hobbies',3)">📚 读书</div>
     <div class="chip" data-v="逛街购物" onclick="pick(this,'hobbies',3)">🛍️ 逛街</div>
@@ -140,7 +138,7 @@ input[type=text]::placeholder{color:#c4b5fd;}
   <div class="progress"><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot active"></div><div class="dot"></div></div>
   <div class="step-num">第 4 题 / 共 5 题</div>
   <h2>你对生活的态度？</h2>
-  <div class="sub">选一个最像你的</div>
+  <div class="sub">选一个最像你的；没有合适的可点「其他」自行填写</div>
   <div class="attitudes">
     <button class="att" data-v="随遇而安" onclick="selAtt(this)">🍃 随遇而安，顺其自然</button>
     <button class="att" data-v="追求极致" onclick="selAtt(this)">💎 追求极致，凡事做到最好</button>
@@ -167,7 +165,7 @@ input[type=text]::placeholder{color:#c4b5fd;}
   <div class="progress"><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot active"></div></div>
   <div class="step-num">第 5 题 / 共 5 题</div>
   <h2>你最喜欢哪种颜色？</h2>
-  <div class="sub">选一个最让你心动的 💜</div>
+  <div class="sub">选一个最让你心动的；没有合适的可点「其他」自行填写 💜</div>
   <div class="colors">
     <div class="clr" style="background:linear-gradient(135deg,#f9a8d4,#ec4899)" data-v="粉色" onclick="selClr(this)">粉色</div>
     <div class="clr" style="background:linear-gradient(135deg,#f1f5f9,#cbd5e1)" data-v="白色" onclick="selClr(this)"><span style="color:#94a3b8">白色</span></div>
@@ -201,11 +199,6 @@ input[type=text]::placeholder{color:#c4b5fd;}
   <div class="r-label">✨ 专属于你的女神节 ✨</div>
   <img id="r-mood-img" class="r-mood-img" src="" alt="" onerror="this.style.display='none'">
   <div class="r-desc" id="r-desc"></div>
-  <div class="r-surprise">
-    <strong>🎁 你的专属女神节惊喜</strong>
-    正在悄悄准备中…<br>
-    <strong style="color:#b45309">📅 周一上班，惊喜在等你 🌸</strong>
-  </div>
   <div class="r-share">📸 截图发至活动打卡群，参与惊喜评选！</div>
 </div>
 </div>
