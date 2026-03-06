@@ -280,9 +280,9 @@ function calc(){
     const scored=PLANTS.map(pl=>{
       let sc=0;
       S.pers.forEach(p=>{if(pl.pp.includes(p))sc+=3;});
-      if(pl.cc.includes(S.clr))sc+=2;
-      S.hobbies.forEach(h=>{if(pl.hh.includes(h))sc+=1;});
-      if(pl.aa.includes(S.att))sc+=1;
+      if(pl.cc.includes(S.clr))sc+=5;
+      S.hobbies.forEach(h=>{if(pl.hh.includes(h))sc+=3;});
+      if(pl.aa.includes(S.att))sc+=5;
       return{pl,sc};
     });
     scored.sort((a,b)=>b.sc-a.sc);
