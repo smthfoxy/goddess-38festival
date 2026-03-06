@@ -288,7 +288,9 @@ function calc(){
     scored.sort((a,b)=>b.sc-a.sc);
     const top=scored.filter(x=>x.sc===scored[0].sc);
     const w=top[Math.floor(Math.random()*top.length)].pl;
-    document.getElementById('r-mood-img').src=w.img;
+    const rImg=document.getElementById('r-mood-img');
+    rImg.style.display='block';
+    rImg.src=w.img;
     document.getElementById('r-desc').textContent=`${S.name}，${w.d}`;
     go('s-res');
   },2200);
